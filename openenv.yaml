@@ -6,7 +6,6 @@ tags:
   - openenv
   - rag
   - document-qa
-
 tasks:
   - id: task1
     description: "Answer a question based on uploaded documents"
@@ -14,37 +13,29 @@ tasks:
     difficulty: easy
     max_attempts: 5
     scoring: "0.0-1.0 partial credit"
-
   - id: task2
     description: "Summarize the content of an uploaded document"
     grader: grade_task2
     difficulty: medium
     max_attempts: 5
     scoring: "0.0-1.0 partial credit"
-
   - id: task3
     description: "Extract key topics from a document"
     grader: grade_task3
     difficulty: hard
     max_attempts: 5
     scoring: "0.0-1.0 partial credit"
-
 endpoints:
   - path: /reset
     method: POST
   - path: /step
     method: POST
-  - path: /state
-    method: GET
-  - path: /tasks
-    method: GET
   - path: /grader
     method: POST
+  - path: /tasks
+    method: GET
   - path: /health
     method: GET
-
 runtime:
-  framework: FastAPI
   python: "3.11"
   docker: true
-  hf_spaces: true
