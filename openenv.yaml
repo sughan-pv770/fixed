@@ -1,0 +1,24 @@
+id: devkey-ai-v1
+name: Devkey AI
+version: 1.0.0
+type: environment
+sdk: openenv
+description: RAG-based document QA RL environment.
+entrypoint: server.app:main
+author: Team Pirates
+tasks:
+  - id: task1
+    name: document_qa
+    description: Answer a question based on uploaded documents
+    grader: grade_task1
+    enabled: true
+  - id: task2
+    name: summarization
+    description: Summarize document content
+    grader: grade_task2
+    enabled: true
+  - id: task3
+    name: keyword_extraction
+    description: Extract key topics from document
+    grader: grade_task3
+    enabled: true
