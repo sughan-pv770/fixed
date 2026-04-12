@@ -247,3 +247,17 @@ async def health():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="0.0.0.0", port=7860, reload=False)
+
+
+@app.post("/grader")
+async def endpoint_grader(request: Request):
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    action = body.get("action", body.get("response", str(body)))
+    task_id = body.get("task_id", "task1")
+    task = GRADED_TASKS.get(task_id, list(GRADED_TASKS.values())[0])
+    reward = task["grader"](action)
+    return JSONResponse(status_code=200, content={"reward": round(reward, 4), "task_id": task_id, "scored": True})
+
