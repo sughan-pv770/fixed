@@ -1,24 +1,78 @@
-id: devkey-ai-v1
-name: Devkey AI
-version: 1.0.0
-type: environment
-sdk: openenv
-description: RAG-based document QA RL environment.
-entrypoint: server.app:main
-author: Team Pirates
+name: devkey_ai_rag
+
+version: "1.0.0"
+
+description: >
+  RAG-based document QA environment for AI agent training.
+  An agent answers questions based on uploaded documents using
+  retrieval-augmented generation with a vector database.
+
+author: "Team Pirates"
+
+tags:
+  - openenv
+  - rag
+  - document-qa
+  - llm
+  - real-world
+
 tasks:
   - id: task1
-    name: document_qa
-    description: Answer a question based on uploaded documents
-    grader: grade_task1
-    enabled: true
+    description: "Answer a question based on uploaded documents"
+    difficulty: easy
+    max_attempts: 5
+    scoring: "0.0-1.0 partial credit"
+
   - id: task2
-    name: summarization
-    description: Summarize document content
-    grader: grade_task2
-    enabled: true
+    description: "Summarize the content of an uploaded document"
+    difficulty: medium
+    max_attempts: 5
+    scoring: "0.0-1.0 partial credit"
+
   - id: task3
-    name: keyword_extraction
-    description: Extract key topics from document
-    grader: grade_task3
-    enabled: true
+    description: "Extract key topics from a document"
+    difficulty: hard
+    max_attempts: 5
+    scoring: "0.0-1.0 partial credit"
+
+observation_space:
+  query: "string — the question or instruction for the agent"
+  task_id: "string — task1 | task2 | task3"
+  task_description: "string — what the agent should do"
+  attempt_number: "int — current attempt"
+  max_attempts: "int — maximum allowed attempts (5)"
+
+action_space:
+  action: "string (required) — the agent response"
+
+reward:
+  type: continuous
+  range: [0.0, 1.0]
+  shaping:
+    - "0.1-0.9 based on response quality and length"
+
+endpoints:
+  - path: /reset
+    method: POST
+    description: Start a new episode
+  - path: /step
+    method: POST
+    description: Submit an agent action
+  - path: /state
+    method: GET
+    description: Get current episode metadata
+  - path: /tasks
+    method: GET
+    description: List all tasks
+  - path: /grader
+    method: POST
+    description: Grade a response without running a full episode
+  - path: /health
+    method: GET
+    description: Health check
+
+runtime:
+  framework: FastAPI + OpenEnv
+  python: "3.11"
+  docker: true
+  hf_spaces: true
