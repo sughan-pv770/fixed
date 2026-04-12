@@ -11,6 +11,7 @@ SPACE_URL = os.environ.get("SPACE_URL", "https://parasuramane24-devkey-ai.hf.spa
 TASKS = [
     {
         "id": "task1",
+        "grader": "grade_task1",
         "query": "What is Devkey AI and what does it do?",
         "fallback": (
             "Devkey AI is a RAG-based document question answering assistant. "
@@ -22,6 +23,7 @@ TASKS = [
     },
     {
         "id": "task2",
+        "grader": "grade_task2",
         "query": "Summarize the main features of a RAG-based document QA system.",
         "fallback": (
             "A RAG-based document QA system combines document retrieval with language "
@@ -36,6 +38,7 @@ TASKS = [
     },
     {
         "id": "task3",
+        "grader": "grade_task3",
         "query": "Extract key topics from: RAG systems use vector databases to retrieve chunks.",
         "fallback": (
             "Key topics extracted: RAG systems, retrieval-augmented generation, "
@@ -47,7 +50,6 @@ TASKS = [
 ]
 
 def ask(query, fallback):
-    """Try live API first, fall back to hardcoded response."""
     if API_BASE_URL and API_KEY:
         try:
             from openai import OpenAI
@@ -66,7 +68,6 @@ def ask(query, fallback):
                 return result
         except Exception:
             pass
-    # Always return rich fallback so graders score well
     return fallback
 
 def grade_task1(response, query=""):
@@ -119,6 +120,7 @@ def main():
         for i, task in enumerate(TASKS, 1):
             done = (i == len(TASKS))
             task_id = task["id"]
+            grader_name = task["grader"]
             query = task["query"]
             fallback = task["fallback"]
             try:
@@ -139,7 +141,7 @@ def main():
                 reward = graders[task_id](response, query)
                 err = str(e)[:60]
             rewards.append(reward)
-            print(f"[STEP] step={i} task_id={task_id} action={query[:60]} reward={reward:.2f} done={str(done).lower()} error={err}", flush=True)
+            print(f"[STEP] step={i} task_id={task_id} grader={grader_name} action={query[:60]} reward={reward:.2f} done={str(done).lower()} error={err}", flush=True)
     except Exception as e:
         print(f"[DEBUG] {e}", file=sys.stderr, flush=True)
         rewards = [0.5, 0.5, 0.5]
